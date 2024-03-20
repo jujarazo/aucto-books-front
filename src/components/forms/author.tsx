@@ -27,28 +27,6 @@ const authorSchema = z.object({
     }),
 });
 
-const NameFormField = (
-  props: ControllerRenderProps<
-    {
-      name: string;
-    },
-    'name'
-  >
-) => {
-  return (
-    <FormItem>
-      <FormLabel>Author's Name</FormLabel>
-      <FormControl>
-        <Input placeholder="Ex. Brandon Sanderson" {...props} />
-      </FormControl>
-      <FormDescription>
-        This is the author's name as it will appear on the site.
-      </FormDescription>
-      <FormMessage />
-    </FormItem>
-  );
-};
-
 export default function CreateAuthorForm() {
   const form = useForm<z.infer<typeof authorSchema>>({
     resolver: zodResolver(authorSchema),
