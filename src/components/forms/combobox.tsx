@@ -26,9 +26,17 @@ const frameworks = [
   { value: 'astro', label: 'Astro' },
 ];
 
-export function Combobox() {
+type ComboboxProps = {
+  value: string;
+  onChange: (value: string) => void;
+  selectText: string;
+  searchText: string;
+  notFoundText: string;
+};
+
+const Combobox = React.forwardRef((props: ComboboxProps, ref) => {
+  const { value, searchText, selectText, notFoundText, onChange } = props;
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState('');
 
   return (
     <div className="w-full">
@@ -42,21 +50,21 @@ export function Combobox() {
           >
             {value
               ? frameworks.find((framework) => framework.value === value)?.label
-              : 'Select an author...'}
+              : selectText}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[330px] md:w-[510px] p-0">
           <Command>
-            <CommandInput placeholder="Search author..." />
+            <CommandInput placeholder={searchText} />
             <CommandList>
-              <CommandEmpty>No framework found.</CommandEmpty>
+              <CommandEmpty>{notFoundText}</CommandEmpty>
               <CommandGroup>
                 {frameworks.map((framework) => (
                   <CommandItem
                     key={framework.value}
                     onSelect={() => {
-                      setValue(
+                      onChange(
                         framework.value === value ? '' : framework.value
                       );
                       setOpen(false);
@@ -81,4 +89,6 @@ export function Combobox() {
       </Popover>
     </div>
   );
-}
+});
+
+export { Combobox };

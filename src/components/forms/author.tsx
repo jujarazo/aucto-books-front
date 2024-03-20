@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Button } from '../ui/button';
+import { CustomFormField } from './field';
 
 const authorSchema = z.object({
   name: z
@@ -66,9 +67,18 @@ export default function CreateAuthorForm() {
         <FormField
           control={form.control}
           name="name"
-          render={({ field }) => <NameFormField {...field} />}
+          render={({ field }) => (
+            <CustomFormField
+              label="Author's Name"
+              description="This is the author's name as it will appear on the site."
+            >
+              <Input placeholder="Ex. Brandon Sanderson" {...field} />
+            </CustomFormField>
+          )}
         />
-        <Button type="submit">Create author</Button>
+        <Button type="submit" className="font-semibold">
+          Create author
+        </Button>
       </form>
     </Form>
   );

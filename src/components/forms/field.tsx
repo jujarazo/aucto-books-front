@@ -25,7 +25,7 @@ export const CustomFormField = forwardRef<HTMLDivElement, FormFieldProps>(
 
     return (
       <FormItem>
-        <FormLabel>{label}</FormLabel>
+        <FormLabel className="font-bold text-xl">{label}</FormLabel>
         <FormControl>{childWithProps}</FormControl>
         <FormDescription>{description}</FormDescription>
         <FormMessage />

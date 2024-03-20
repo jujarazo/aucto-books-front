@@ -14,10 +14,10 @@ const bookSchema = z.object({
   name: z
     .string()
     .min(1, {
-      message: 'Book name must be at least 1 character long.',
+      message: "Book's name must be at least 1 character long.",
     })
     .max(100, {
-      message: 'Book name must be shorter than 100 characters long.',
+      message: "Book's name must be shorter than 100 characters long.",
     }),
   description: z
     .string()
@@ -27,6 +27,7 @@ const bookSchema = z.object({
     .max(150, {
       message: 'Book description must be shorter than 150 characters long.',
     }),
+  authorId: z.string().min(1, { message: 'Author must be selected' }),
 });
 
 export default function CreateBookForm() {
@@ -35,6 +36,7 @@ export default function CreateBookForm() {
     defaultValues: {
       name: '',
       description: '',
+      authorId: '',
     },
   });
 
@@ -45,6 +47,7 @@ export default function CreateBookForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* BOOK'S NAME */}
         <FormField
           control={form.control}
           name="name"
@@ -57,6 +60,7 @@ export default function CreateBookForm() {
             </CustomFormField>
           )}
         />
+        {/* BOOK'S DESCRIPTION */}
         <FormField
           control={form.control}
           name="description"
@@ -72,8 +76,27 @@ export default function CreateBookForm() {
             </CustomFormField>
           )}
         />
-        <Combobox />
-        <Button type="submit">Create Book</Button>
+        {/* BOOK'S AUTHOR */}
+        <FormField
+          control={form.control}
+          name="authorId"
+          render={({ field }) => (
+            <CustomFormField
+              label="Book's Author"
+              description="This is the author of the book."
+            >
+              <Combobox
+                {...field}
+                notFoundText="No author found"
+                searchText="Search for an author"
+                selectText="Select an author"
+              />
+            </CustomFormField>
+          )}
+        />
+        <Button type="submit" className="font-semibold">
+          Create Book
+        </Button>
       </form>
     </Form>
   );
