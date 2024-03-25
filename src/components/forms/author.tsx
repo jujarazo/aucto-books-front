@@ -1,22 +1,16 @@
 'use client';
 
 import { Input } from '@/components/ui/input';
-import { ControllerRenderProps, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
+import { Form, FormField } from '../ui/form';
 import { Button } from '../ui/button';
 import { CustomFormField } from './field';
+import { useToast } from '../ui/use-toast';
+import { useMutation } from '@tanstack/react-query';
 
-const authorSchema = z.object({
+export const authorSchema = z.object({
   name: z
     .string()
     .min(2, {
@@ -27,7 +21,26 @@ const authorSchema = z.object({
     }),
 });
 
+async function postAuthor(authorData: z.infer<typeof authorSchema>) {
+  const response = await fetch('/authors/api', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(authorData),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Failed to create author');
+  }
+
+  return response.json();
+}
+
 export default function CreateAuthorForm() {
+  const { toast } = useToast();
+
   const form = useForm<z.infer<typeof authorSchema>>({
     resolver: zodResolver(authorSchema),
     defaultValues: {
@@ -35,8 +48,24 @@ export default function CreateAuthorForm() {
     },
   });
 
+  const mutation = useMutation({
+    mutationFn: postAuthor,
+    onSuccess: () => {
+      toast({
+        title: 'Author created',
+        description: 'The author has been created successfully',
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Error creating author',
+        description: error.message,
+      });
+    },
+  });
+
   const onSubmit = (values: z.infer<typeof authorSchema>) => {
-    console.log(values);
+    mutation.mutate(values);
   };
 
   return (

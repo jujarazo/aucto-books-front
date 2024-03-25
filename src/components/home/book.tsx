@@ -9,17 +9,23 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-export function Book() {
+type propTypes = {
+  title: string;
+  description: string;
+  author: string;
+};
+
+export function Book({ title, description, author }: propTypes) {
   return (
-    <Card className="">
+    <Card className="h-[400px] flex flex-col">
       <CardHeader>
-        <CardTitle>Book title</CardTitle>
+        <CardTitle>{title}</CardTitle>
       </CardHeader>
-      <CardContent>
-        <CardDescription>Description</CardDescription>
+      <CardContent className="grow">
+        <CardDescription>{description}</CardDescription>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <p>Author name</p>
+      <CardFooter>
+        <p>{author}</p>
       </CardFooter>
     </Card>
   );
