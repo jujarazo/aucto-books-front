@@ -18,24 +18,28 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 
-const frameworks = [
-  { value: 'next.js', label: 'Next.js' },
-  { value: 'sveltekit', label: 'SvelteKit' },
-  { value: 'nuxt.js', label: 'Nuxt.js' },
-  { value: 'remix', label: 'Remix' },
-  { value: 'astro', label: 'Astro' },
-];
-
 type ComboboxProps = {
   value: string;
-  onChange: (value: string) => void;
+  selectedLabel: string;
+  onChange: (value: string, selectedLabel: string) => void;
+  onInputChange?: (query: string) => void;
   selectText: string;
   searchText: string;
   notFoundText: string;
+  options: { value: string; label: string }[];
 };
 
 const Combobox = React.forwardRef((props: ComboboxProps, ref) => {
-  const { value, searchText, selectText, notFoundText, onChange } = props;
+  const {
+    value,
+    selectedLabel,
+    options,
+    searchText,
+    selectText,
+    notFoundText,
+    onChange,
+    onInputChange,
+  } = props;
   const [open, setOpen] = useState(false);
 
   return (
@@ -48,38 +52,39 @@ const Combobox = React.forwardRef((props: ComboboxProps, ref) => {
             aria-expanded={open}
             className="justify-between w-full"
           >
-            {value
-              ? frameworks.find((framework) => framework.value === value)?.label
-              : selectText}
+            {value ? selectedLabel : selectText}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[330px] md:w-[510px] p-0">
-          <Command>
-            <CommandInput placeholder={searchText} />
+          <Command shouldFilter={false}>
+            <CommandInput
+              onChangeCapture={(e: React.ChangeEvent<HTMLInputElement>) =>
+                onInputChange?.(e.target.value)
+              }
+              placeholder={searchText}
+            />
             <CommandList>
               <CommandEmpty>{notFoundText}</CommandEmpty>
               <CommandGroup>
-                {frameworks.map((framework) => (
+                {options.map((option) => (
                   <CommandItem
-                    key={framework.value}
+                    key={option.value}
                     onSelect={() => {
-                      onChange(
-                        framework.value === value ? '' : framework.value
-                      );
+                      onChange(option.value, option.label);
                       setOpen(false);
                     }}
                     className={cn({
-                      'data-disabled="true"': value === framework.value,
+                      'data-disabled="true"': value === option.value,
                     })}
                   >
                     <Check
                       className={cn(
                         'mr-2 h-4 w-4',
-                        value === framework.value ? 'opacity-100' : 'opacity-0'
+                        value === option.value ? 'opacity-100' : 'opacity-0'
                       )}
                     />
-                    {framework.label}
+                    {option.label}
                   </CommandItem>
                 ))}
               </CommandGroup>

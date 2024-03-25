@@ -9,6 +9,11 @@ import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
 import { CustomFormField } from './field';
 import { Combobox } from './combobox';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Author } from '@/app/utils/types';
+import { useState } from 'react';
+import { useDebounce } from '@/hooks';
+import { useToast } from '../ui/use-toast';
 
 const bookSchema = z.object({
   name: z
@@ -30,7 +35,38 @@ const bookSchema = z.object({
   authorId: z.string().min(1, { message: 'Author must be selected' }),
 });
 
+async function getAuthors(nameFilter: string): Promise<Author[]> {
+  const response = await fetch(
+    `/authors/api?name=${encodeURIComponent(nameFilter)}`
+  );
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Failed to fetch authors');
+  }
+
+  return response.json();
+}
+
+async function postBook(bookData: z.infer<typeof bookSchema>) {
+  const response = await fetch('/books/api', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(bookData),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Failed to create book');
+  }
+
+  return response.json();
+}
+
 export default function CreateBookForm() {
+  const { toast } = useToast();
+
   const form = useForm<z.infer<typeof bookSchema>>({
     resolver: zodResolver(bookSchema),
     defaultValues: {
@@ -40,8 +76,49 @@ export default function CreateBookForm() {
     },
   });
 
+  const [authorQuery, setAuthorQuery] = useState('');
+  const [selectedAuthorName, setSelectedAuthorName] = useState('');
+
+  const debouncedAuthorQuery = useDebounce(authorQuery, 500);
+
+  const queryClient = useQueryClient();
+
+  const { data: authors } = useQuery({
+    queryKey: ['authors', debouncedAuthorQuery],
+    queryFn: async () => getAuthors(debouncedAuthorQuery),
+    enabled: debouncedAuthorQuery.length > 0,
+  });
+
+  const mutation = useMutation({
+    mutationFn: postBook,
+    onSuccess: () => {
+      toast({
+        title: 'Book created',
+        description: "The book's been created successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['books'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Error creating book',
+        description: error.message,
+      });
+    },
+  });
+
   const onSubmit = (values: z.infer<typeof bookSchema>) => {
     console.log(values);
+    mutation.mutate(values);
+    form.reset();
+  };
+
+  const handleAuthorSearchChange = (value: string) => {
+    setAuthorQuery(value);
+  };
+
+  const handleSelectAuthor = (authorId: string, authorName: string) => {
+    setSelectedAuthorName(authorName);
+    form.setValue('authorId', authorId);
   };
 
   return (
@@ -90,6 +167,15 @@ export default function CreateBookForm() {
                 notFoundText="No author found"
                 searchText="Search for an author"
                 selectText="Select an author"
+                options={
+                  authors?.map((author) => ({
+                    value: author._id,
+                    label: author.name,
+                  })) || []
+                }
+                onChange={handleSelectAuthor}
+                onInputChange={handleAuthorSearchChange}
+                selectedLabel={selectedAuthorName}
               />
             </CustomFormField>
           )}

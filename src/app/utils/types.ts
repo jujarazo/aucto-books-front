@@ -5,3 +5,8 @@ export type Book = {
   authorId: string;
   authorName: string;
 };
+
+export type Author = {
+  _id: string;
+  name: string;
+};
