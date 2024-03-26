@@ -47,11 +47,6 @@ export default async function Home() {
           </Button>
         </div>
       </div>
-      <div className="fixed md:hidden bottom-4 right-4">
-        <Button className="rounded-full font-bold" asChild>
-          <Link href="/books/create">+</Link>
-        </Button>
-      </div>
       <HydrationBoundary state={dehydrate(queryClient)}>
         <Books />
       </HydrationBoundary>

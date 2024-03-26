@@ -3,10 +3,14 @@
 import { Book } from '@/components/home/book';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getBooks } from './page';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { BookOpen, Plus, User } from 'lucide-react';
 
 export default function Books() {
+  const [showButtons, setShowButtons] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { data, error } = useQuery({
@@ -40,6 +44,8 @@ export default function Books() {
     };
   }, [queryClient]);
 
+  const toggleButtons = () => setShowButtons(!showButtons);
+
   if (error) {
     return <div>Error: {error.message}</div>;
   }
@@ -56,6 +62,39 @@ export default function Books() {
             title={book.name}
           />
         ))}
+      {showButtons && (
+        <div className="fixed md:hidden bottom-16 right-4 flex flex-col items-center gap-2">
+          <Button
+            className="rounded-full font-bold"
+            asChild
+            onClick={toggleButtons}
+          >
+            <Link href="/books/create">
+              <BookOpen size={18} />
+            </Link>
+          </Button>
+          <Button
+            className="rounded-full font-bold"
+            asChild
+            onClick={toggleButtons}
+          >
+            <Link href="/authors/create">
+              <User size={18} />
+            </Link>
+          </Button>
+        </div>
+      )}
+      <div className="fixed md:hidden bottom-4 right-4">
+        <Button
+          className="rounded-full font-bold"
+          onClick={toggleButtons}
+          asChild
+        >
+          <a className="flex items-center justify-center">
+            <Plus size={18} />
+          </a>
+        </Button>
+      </div>
     </div>
   );
 }
