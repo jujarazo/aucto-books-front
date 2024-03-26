@@ -107,7 +107,6 @@ export default function CreateBookForm() {
   });
 
   const onSubmit = (values: z.infer<typeof bookSchema>) => {
-    console.log(values);
     mutation.mutate(values);
     form.reset();
   };
