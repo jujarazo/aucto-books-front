@@ -2,7 +2,7 @@
 
 import { Book } from '@/components/home/book';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getBooks } from './page';
+import { getBooks } from '@/services';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
@@ -10,14 +10,18 @@ import Link from 'next/link';
 import { BookOpen, Plus, User } from 'lucide-react';
 
 export default function Books() {
+  // State for the navigation buttons on mobile
   const [showButtons, setShowButtons] = useState(false);
+
   const { toast } = useToast();
+
   const queryClient = useQueryClient();
   const { data, error } = useQuery({
     queryKey: ['books'],
     queryFn: async () => getBooks(),
   });
 
+  // Subscribe to the SSE endpoint for new book notifications
   useEffect(() => {
     // Set up the SSE connection for receiving new book notifications
     const eventSource = new EventSource(
@@ -52,6 +56,7 @@ export default function Books() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Books components */}
       {data &&
         data.length &&
         data?.map((book) => (
@@ -62,8 +67,11 @@ export default function Books() {
             title={book.name}
           />
         ))}
+
+      {/* Mobile Navigation Buttons */}
       {showButtons && (
         <div className="fixed md:hidden bottom-16 right-4 flex flex-col items-center gap-2">
+          {/* Navigate to create book route */}
           <Button
             className="rounded-full font-bold"
             asChild
@@ -73,6 +81,8 @@ export default function Books() {
               <BookOpen size={18} />
             </Link>
           </Button>
+
+          {/* Navigate to create author route */}
           <Button
             className="rounded-full font-bold"
             asChild
@@ -84,6 +94,8 @@ export default function Books() {
           </Button>
         </div>
       )}
+
+      {/* Toggle navigation buttons */}
       <div className="fixed md:hidden bottom-4 right-4">
         <Button
           className="rounded-full font-bold"

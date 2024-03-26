@@ -9,6 +9,7 @@ export async function GET() {
   };
 
   const url = process.env.BACKEND_URL + '/api/books';
+  // Add query parameter to include author name (1 = true, 0 = false)
   const queryParams = new URLSearchParams({ withAuthorName: '1' });
   const response = await fetch(`${url}?${queryParams.toString()}`, options);
 

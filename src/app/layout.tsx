@@ -19,12 +19,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        {/* React Query Provider compatible with SSR */}
         <Providers>
           <main className="flex min-h-screen flex-col items-center p-6 sm:p-16 lg:p-24">
             <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
               {children}
             </div>
           </main>
+          {/* Toaster component to show notifications */}
           <Toaster />
         </Providers>
       </body>

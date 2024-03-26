@@ -2,46 +2,19 @@
 
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormField } from '../ui/form';
 import { Button } from '../ui/button';
 import { CustomFormField } from './field';
 import { useToast } from '../ui/use-toast';
 import { useMutation } from '@tanstack/react-query';
-
-export const authorSchema = z.object({
-  name: z
-    .string()
-    .min(2, {
-      message: 'Author name must be at least 2 characters long.',
-    })
-    .max(100, {
-      message: 'Author name must be shorter than 100 characters long',
-    }),
-});
-
-async function postAuthor(authorData: z.infer<typeof authorSchema>) {
-  const response = await fetch('/authors/api', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(authorData),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || 'Failed to create author');
-  }
-
-  return response.json();
-}
+import { AuthorPostData, authorSchema } from '@/types';
+import { postAuthor } from '@/services';
 
 export default function CreateAuthorForm() {
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof authorSchema>>({
+  const form = useForm<AuthorPostData>({
     resolver: zodResolver(authorSchema),
     defaultValues: {
       name: '',
@@ -64,7 +37,7 @@ export default function CreateAuthorForm() {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof authorSchema>) => {
+  const onSubmit = (values: AuthorPostData) => {
     mutation.mutate(values);
   };
 

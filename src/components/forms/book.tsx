@@ -2,7 +2,6 @@
 
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormField } from '../ui/form';
 import { Button } from '../ui/button';
@@ -10,64 +9,16 @@ import { Textarea } from '../ui/textarea';
 import { CustomFormField } from './field';
 import { Combobox } from './combobox';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Author } from '@/app/utils/types';
 import { useState } from 'react';
 import { useDebounce } from '@/hooks';
 import { useToast } from '../ui/use-toast';
-
-const bookSchema = z.object({
-  name: z
-    .string()
-    .min(1, {
-      message: "Book's name must be at least 1 character long.",
-    })
-    .max(100, {
-      message: "Book's name must be shorter than 100 characters long.",
-    }),
-  description: z
-    .string()
-    .min(1, {
-      message: 'Book description must be at least 1 character long.',
-    })
-    .max(150, {
-      message: 'Book description must be shorter than 150 characters long.',
-    }),
-  authorId: z.string().min(1, { message: 'Author must be selected' }),
-});
-
-async function getAuthors(nameFilter: string): Promise<Author[]> {
-  const response = await fetch(
-    `/authors/api?name=${encodeURIComponent(nameFilter)}`
-  );
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || 'Failed to fetch authors');
-  }
-
-  return response.json();
-}
-
-async function postBook(bookData: z.infer<typeof bookSchema>) {
-  const response = await fetch('/books/api', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(bookData),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || 'Failed to create book');
-  }
-
-  return response.json();
-}
+import { BookPostData, bookSchema } from '@/types';
+import { getAuthors, postBook } from '@/services';
 
 export default function CreateBookForm() {
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof bookSchema>>({
+  const form = useForm<BookPostData>({
     resolver: zodResolver(bookSchema),
     defaultValues: {
       name: '',
@@ -76,13 +27,16 @@ export default function CreateBookForm() {
     },
   });
 
+  // State for the author search query
   const [authorQuery, setAuthorQuery] = useState('');
   const [selectedAuthorName, setSelectedAuthorName] = useState('');
 
+  // Debounce the author query to avoid making too many requests
   const debouncedAuthorQuery = useDebounce(authorQuery, 500);
 
   const queryClient = useQueryClient();
 
+  // Fetch authors based on the debounce search query
   const { data: authors } = useQuery({
     queryKey: ['authors', debouncedAuthorQuery],
     queryFn: async () => getAuthors(debouncedAuthorQuery),
@@ -106,7 +60,7 @@ export default function CreateBookForm() {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof bookSchema>) => {
+  const onSubmit = (values: BookPostData) => {
     mutation.mutate(values);
     form.reset();
   };
@@ -136,6 +90,7 @@ export default function CreateBookForm() {
             </CustomFormField>
           )}
         />
+
         {/* BOOK'S DESCRIPTION */}
         <FormField
           control={form.control}
@@ -152,6 +107,7 @@ export default function CreateBookForm() {
             </CustomFormField>
           )}
         />
+
         {/* BOOK'S AUTHOR */}
         <FormField
           control={form.control}

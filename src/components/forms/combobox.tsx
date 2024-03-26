@@ -45,6 +45,7 @@ const Combobox = React.forwardRef((props: ComboboxProps, ref) => {
   return (
     <div className="w-full">
       <Popover open={open} onOpenChange={setOpen}>
+        {/* Select Input Button */}
         <PopoverTrigger asChild>
           <Button
             variant="outline"
@@ -57,7 +58,9 @@ const Combobox = React.forwardRef((props: ComboboxProps, ref) => {
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[330px] md:w-[510px] p-0">
+          {/* List the options (filter set to false because it comes from the BE) */}
           <Command shouldFilter={false}>
+            {/* Search input */}
             <CommandInput
               onChangeCapture={(e: React.ChangeEvent<HTMLInputElement>) =>
                 onInputChange?.(e.target.value)
@@ -66,6 +69,7 @@ const Combobox = React.forwardRef((props: ComboboxProps, ref) => {
             />
             <CommandList>
               <CommandEmpty>{notFoundText}</CommandEmpty>
+              {/* Group the props options */}
               <CommandGroup>
                 {options.map((option) => (
                   <CommandItem

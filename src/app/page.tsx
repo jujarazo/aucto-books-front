@@ -1,4 +1,3 @@
-import { Book } from './utils/types';
 import { Button } from '@/components/ui/button';
 import {
   HydrationBoundary,
@@ -7,24 +6,7 @@ import {
 } from '@tanstack/react-query';
 import Link from 'next/link';
 import Books from './books';
-
-export const getBooks = async (): Promise<Book[]> => {
-  const options = {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
-  const response = await fetch('books/api', options);
-
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-
-  const data = await response.json();
-
-  return data;
-};
+import { getBooks } from '@/services';
 
 export default async function Home() {
   const queryClient = new QueryClient();
