@@ -5,7 +5,7 @@ import {
   dehydrate,
 } from '@tanstack/react-query';
 import Link from 'next/link';
-import Books from './books';
+import Books from '../components/home/books';
 import { getBooks } from '@/services';
 
 export default async function Home() {

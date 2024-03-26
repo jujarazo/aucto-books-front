@@ -1,11 +1,11 @@
 ## Aucto book frontend
 
-- 🔥 [Next.js](https://nextjs.org) bootstrapped with create-next-app
+- 🔥 [Next.js](https://nextjs.org) bootstrapped with create-next-app.
 - 🌼 [React-Query](https://react-query-v2.tanstack.com/) to handle server state.
 - ༄ [Tailwind](https://tailwindcss.com/) for the CSS.
-- 📲 [shadcn](https://ui.shadcn.com/) for the UI
-- 📋 [React Hook Form](https://react-hook-form.com/) to handle the forms
-- ✅ [Zod](https://zod.dev/) for schema validation
+- 📲 [shadcn](https://ui.shadcn.com/) for the UI.
+- 📋 [React Hook Form](https://react-hook-form.com/) to handle the forms.
+- ✅ [Zod](https://zod.dev/) for schema validation.
 
 ## Getting Started
 
@@ -21,29 +21,36 @@ pnpm dev
 bun dev
 ```
 
+Add a .env file to connect the BE with the following:
+
+```bash
+BACKEND_URL=http://localhost:8080
+```
+
 ## App structure
 
 ```
 .
 ├── app
-│   ├── layout.tsx
-│   └── page.tsx
+│   ├── layout.tsx                # Layout for all the pages
+│   ├── page.tsx                  # Home page
+│   ├── authors
+│   │   ├── api                   # Nextjs server author endpoints
+│   │   └── create                # Create author page
+│   └── books
+│   │   ├── api                   # Nextjs server books endpoints
+│   │   └── create                # Create books page
 ├── components
-│   ├── ui
-│   │   ├── alert-dialog.tsx
+│   ├── ui                        # shadcn UI components
+│   │   ├── card.tsx
 │   │   ├── button.tsx
-│   │   ├── dropdown-menu.tsx
+│   │   ├── dialog.tsx
 │   │   └── ...
-│   ├── main-nav.tsx
-│   ├── page-header.tsx
-│   └── ...
+│   ├── forms                     # Components for the Create author and book pages
+│   └── home                      # Components for the Home page
+├── hooks                         # Custom hooks
 ├── lib
 │   └── utils.ts
-├── styles
-│   └── globals.css
-├── next.config.js
-├── package.json
-├── postcss.config.js
-├── tailwind.config.js
-└── tsconfig.json
+├── services                      # Contains the requests to the Nextjs server routes
+├── types                         # Types and schemas for form validation
 ```

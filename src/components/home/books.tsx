@@ -1,6 +1,6 @@
 'use client';
 
-import { Book } from '@/components/home/book';
+import { Book } from '@/components/home/bookCard';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getBooks } from '@/services';
 import { useEffect, useState } from 'react';
