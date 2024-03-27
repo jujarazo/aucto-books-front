@@ -21,6 +21,7 @@ export default function Books() {
     queryFn: async () => getBooks(),
   });
 
+  // Improve: Refactor the SSE connection to Nextjs API routes to not expose BE URL
   // Subscribe to the SSE endpoint for new book notifications
   useEffect(() => {
     // Set up the SSE connection for receiving new book notifications
